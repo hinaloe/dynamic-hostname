@@ -16,6 +16,7 @@ $dynamic_hostname->register();
 class Dynamic_Hostname {
 
 	private $home_url;
+	private $default_hostname;
 
 	function register()
 	{
@@ -85,17 +86,21 @@ class Dynamic_Hostname {
 
 	private function get_default_hostname()
 	{
+		if (isset($this->default_hostname)) {
+			return $this->default_hostname;
+		}
 		if (defined('WP_HOME')) {
 			$uri = parse_url(WP_HOME);
 		} else {
 			$uri = parse_url($this->home_url);
 		}
 		
-		if ( isset( $uri['port'] ) && $uri !== 80 && $uri !== 443 ){
-			return $uri['host'] . ':' . $uri['port'];
+		if ( isset( $uri['port'] ) && $uri !== 80 && $uri !== 443 ) {
+			$this->default_hostname = $uri['host'] . ':' . $uri['port'];
 		} else {
-			return $uri['host'];
+			$this->default_hostname = $uri['host'];
 		}
+		return $this->default_hostname;
 	}
 
 }
